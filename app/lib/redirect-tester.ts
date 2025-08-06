@@ -72,7 +72,7 @@ export async function testRedirectChain(
             try {
                 const response = await fetch(currentUrl, {
                     method: "GET",
-                    headers: USER_AGENTS[device],
+                    headers: USER_AGENTS[device] as unknown as HeadersInit,
                     redirect: "manual",
                     signal: controller.signal,
                 });
