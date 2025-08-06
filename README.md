@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Redirect Chain Tester
+
+A web-based tool that tests and visualizes the complete redirect chain for any given URL, with the ability to simulate different device types (desktop, tablet, mobile) through custom headers.
+
+## Features
+
+-   🔍 **Complete Redirect Chain Visualization**: See every step in the redirect process
+-   📱 **Device Simulation**: Test redirects as desktop, iPhone (iOS), Android phone, iPad (iOS), or Android tablet
+-   ⚡ **Performance Metrics**: View response times for each redirect step
+-   🔒 **SSL Certificate Detection**: Identify secure and insecure connections
+-   📋 **One-Click Copy**: Copy any URL in the chain with a single click
+-   🎨 **Clean, Modern UI**: Built with Tailwind CSS for a beautiful user experience
+-   🚨 **Smart Warnings**: Detection for redirect loops and excessive redirects
+-   📊 **Detailed Headers**: View response headers for each step (collapsible)
+
+## Tech Stack
+
+-   **Framework**: Next.js 14+ (App Router)
+-   **Frontend**: React, TypeScript, Tailwind CSS
+-   **Icons**: Lucide React
+-   **HTTP Client**: Native fetch API
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+-   Node.js 18+ installed
+-   npm or yarn package manager
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd redirect_tester
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser (or check the terminal for the actual port if 3000 is already in use)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Enter any URL in the input field (with or without protocol)
+2. Select the device type you want to simulate:
+    - Desktop (Windows/Mac/Linux)
+    - iPhone (iOS)
+    - Android Phone
+    - iPad (iOS)
+    - Android Tablet
+3. Click the search button or press Enter
+4. View the complete redirect chain with detailed information
 
-## Learn More
+## API Endpoint
 
-To learn more about Next.js, take a look at the following resources:
+### POST /api/test-redirect
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Tests a URL and returns the complete redirect chain.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Request Body:**
 
-## Deploy on Vercel
+```typescript
+{
+  url: string;
+  device: 'desktop' | 'mobile-ios' | 'mobile-android' | 'tablet-ios' | 'tablet-android';
+  maxRedirects?: number; // Default: 10
+  timeout?: number; // Default: 30000ms
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Response:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```typescript
+{
+  success: boolean;
+  data?: {
+    chain: RedirectStep[];
+    finalUrl: string;
+    totalRedirects: number;
+    totalTime: number;
+    hasLoop: boolean;
+    warnings: string[];
+  };
+  error?: string;
+}
+```
+
+## Security Features
+
+-   Rate limiting (10 requests per minute per IP)
+-   SSRF protection (blocks internal/private IPs)
+-   Input validation and sanitization
+-   Content Security Policy headers
+-   Maximum response size limits
+
+## Building for Production
+
+```bash
+npm run build
+npm start
+```
+
+## License
+
+MIT
